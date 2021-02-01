@@ -6,6 +6,11 @@ public class Cinema
 {
     public static void main(String[] args)
     {
+        run();
+    }
+
+    private static void run()
+    {
         final Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the number of rows:");
         final int ROWS = scanner.nextInt() + 1;
@@ -13,25 +18,53 @@ public class Cinema
         System.out.println("Enter the number of seats in each row:");
         final int COLUMNS = scanner.nextInt() + 1;
         scanner.nextLine();
-        System.out.println();
 
-        int[][] matrix = fillMatrix(ROWS, COLUMNS);
-        printMatrix(matrix, ROWS, COLUMNS);
+        int[][] matrix = new int[ROWS][COLUMNS];
+        fillMatrix(matrix, ROWS, COLUMNS);
 
-        System.out.println("\nEnter a row number:");
-        final int ROW_NUMBER = scanner.nextInt();
-        scanner.nextLine();
+        boolean isRunning = true;
+
+        while (isRunning)
+        {
+            printMenu();
+
+            int menuSelection = Input.getInt();
+            System.out.println();
+
+            switch (menuSelection)
+            {
+                case 0:
+                    isRunning = false;
+                    break;
+                case 1:
+                    printMatrix(matrix, ROWS, COLUMNS);
+                    break;
+                case 2:
+                    buyTicket(matrix, ROWS, COLUMNS);
+                    break;
+            }
+        }
+    }
+
+    private static void buyTicket(int[][] aMatrix, int aRows, int aColumns)
+    {
+        System.out.println("Enter a row number:");
+        final int ROW_NUMBER = Input.getInt();
         System.out.println("Enter a seat number in that row:");
-        final int COL_NUMBER = scanner.nextInt();
-        scanner.nextLine();
+        final int COL_NUMBER = Input.getInt();
+
+        final int ticketPrice = getPrice(aRows - 1, aColumns - 1, ROW_NUMBER);
+        System.out.println("Ticket price: $" + ticketPrice);
+
+        aMatrix[ROW_NUMBER][COL_NUMBER] = -2;
+    }
+
+    private static void printMenu()
+    {
         System.out.println();
-
-        final int ticketPrice = getPrice(ROWS - 1, COLUMNS - 1, ROW_NUMBER);
-
-        System.out.println("Ticket price: $" + ticketPrice + "\n");
-
-        matrix[ROW_NUMBER][COL_NUMBER] = -2;
-        printMatrix(matrix, ROWS, COLUMNS);
+        System.out.println("1. Show the seats");
+        System.out.println("2. Buy a ticket");
+        System.out.println("0. Exit");
     }
 
     private static int getTotalSeats(int aRows, int aColumns)
@@ -58,33 +91,29 @@ public class Cinema
         return 8;
     }
 
-    private static int[][] fillMatrix(int aRows, int aColumns)
+    private static void fillMatrix(int[][] aMatrix, int aRows, int aColumns)
     {
-        int[][] matrix = new int[aRows][aColumns];
-
         for (int row = 0; row < aRows; ++row)
         {
             for (int col = 0; col < aColumns; ++col)
             {
                 if (row == 0)
                 {
-                    matrix[row][col] = col;
+                    aMatrix[row][col] = col;
                 }
                 else
                 {
                     if (col == 0)
                     {
-                        matrix[row][col] = row;
+                        aMatrix[row][col] = row;
                     }
                     else
                     {
-                        matrix[row][col] = -1;
+                        aMatrix[row][col] = -1;
                     }
                 }
             }
         }
-
-        return matrix;
     }
 
     private static void printMatrix(int[][] aMatrix, int aRows, int aColumns)
@@ -115,30 +144,6 @@ public class Cinema
                         break;
                 }
                 System.out.print(" ");
-
-                //if (row == 0)
-                //{
-                //    if (col == 0)
-                //    {
-                //        System.out.print("  ");
-                //    }
-                //    else
-                //    {
-                //        System.out.print(col + " ");
-                //    }
-                //}
-                //else
-                //{
-                //    if (col == 0)
-                //    {
-                //        System.out.print(row + " ");
-                //    }
-                //    else
-                //    {
-                //        System.out.print("S ");
-                //    }
-                //}
-
             }
             System.out.println();
         }
