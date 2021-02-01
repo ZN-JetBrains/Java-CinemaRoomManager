@@ -8,67 +8,136 @@ public class Cinema
     {
         final Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the number of rows:");
-        final int ROWS = scanner.nextInt();
+        final int ROWS = scanner.nextInt() + 1;
         scanner.nextLine();
         System.out.println("Enter the number of seats in each row:");
-        final int COLUMNS = scanner.nextInt();
+        final int COLUMNS = scanner.nextInt() + 1;
         scanner.nextLine();
-        System.out.println("Total income:");
+        System.out.println();
 
-        final int TOTAL_SEATS = ROWS * COLUMNS;
-        final int PRICE_PER_TICKET_FRONT = 10;
-        final int PRICE_PER_TICKET_BACK;
+        int[][] matrix = fillMatrix(ROWS, COLUMNS);
+        printMatrix(matrix, ROWS, COLUMNS);
 
-        final int TOTAL_REVENUE;
+        System.out.println("\nEnter a row number:");
+        final int ROW_NUMBER = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Enter a seat number in that row:");
+        final int COL_NUMBER = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println();
 
-        final int frontRows = ROWS / 2;
-        final int backRows = ROWS - frontRows;
+        final int ticketPrice = getPrice(ROWS - 1, COLUMNS - 1, ROW_NUMBER);
+
+        System.out.println("Ticket price: $" + ticketPrice + "\n");
+
+        matrix[ROW_NUMBER][COL_NUMBER] = -2;
+        printMatrix(matrix, ROWS, COLUMNS);
+    }
+
+    private static int getTotalSeats(int aRows, int aColumns)
+    {
+        return aRows * aColumns;
+    }
+
+    private static int getPrice(int aRows, int aColumns, int aSelectedRow)
+    {
+        final int TOTAL_SEATS = getTotalSeats(aRows, aColumns);
 
         if (TOTAL_SEATS < 60)
         {
-            TOTAL_REVENUE = TOTAL_SEATS * PRICE_PER_TICKET_FRONT;
-        }
-        else
-        {
-            PRICE_PER_TICKET_BACK = 8;
-            TOTAL_REVENUE = COLUMNS * (PRICE_PER_TICKET_FRONT * frontRows) + COLUMNS * (PRICE_PER_TICKET_BACK * backRows);
+            return 10;
         }
 
-        System.out.println("$" + TOTAL_REVENUE);
+        final int frontRows = aRows / 2;
+
+        if (aSelectedRow <= frontRows)
+        {
+            return 10;
+        }
+
+        return 8;
     }
 
-    private void printArrangement()
+    private static int[][] fillMatrix(int aRows, int aColumns)
     {
-        final int ROW_SIZE = 7;
-        final int COL_SIZE = 8;
+        int[][] matrix = new int[aRows][aColumns];
 
-        System.out.println("Cinema:");
-        for (int row = 0; row <= ROW_SIZE; ++row)
+        for (int row = 0; row < aRows; ++row)
         {
-            for (int col = 0; col <= COL_SIZE; ++col)
+            for (int col = 0; col < aColumns; ++col)
             {
                 if (row == 0)
                 {
-                    if (col == 0)
-                    {
-                        System.out.print("  ");
-                    }
-                    else
-                    {
-                        System.out.print(col + " ");
-                    }
+                    matrix[row][col] = col;
                 }
                 else
                 {
                     if (col == 0)
                     {
-                        System.out.print(row + " ");
+                        matrix[row][col] = row;
                     }
                     else
                     {
-                        System.out.print("S ");
+                        matrix[row][col] = -1;
                     }
                 }
+            }
+        }
+
+        return matrix;
+    }
+
+    private static void printMatrix(int[][] aMatrix, int aRows, int aColumns)
+    {
+        // -2 : B
+        // -1 : S
+        // 0 : empty space
+        // else: echo value
+
+        System.out.println("Cinema:");
+        for (int row = 0; row < aRows; ++row)
+        {
+            for (int col = 0; col < aColumns; ++col)
+            {
+                switch (aMatrix[row][col])
+                {
+                    case -2:
+                        System.out.print("B");
+                        break;
+                    case -1:
+                        System.out.print("S");
+                        break;
+                    case 0:
+                        System.out.print(" ");
+                        break;
+                    default:
+                        System.out.print(aMatrix[row][col]);
+                        break;
+                }
+                System.out.print(" ");
+
+                //if (row == 0)
+                //{
+                //    if (col == 0)
+                //    {
+                //        System.out.print("  ");
+                //    }
+                //    else
+                //    {
+                //        System.out.print(col + " ");
+                //    }
+                //}
+                //else
+                //{
+                //    if (col == 0)
+                //    {
+                //        System.out.print(row + " ");
+                //    }
+                //    else
+                //    {
+                //        System.out.print("S ");
+                //    }
+                //}
 
             }
             System.out.println();
