@@ -1,7 +1,13 @@
 package cinema;
 
+import java.util.Locale;
 import java.util.Scanner;
 
+/**
+ * This class is responsible for running the program that simulates a Cinema Room Manager
+ *
+ * @author Zaid Neurothrone
+ */
 public class Cinema
 {
     public static void main(String[] args)
@@ -9,6 +15,9 @@ public class Cinema
         run();
     }
 
+    /**
+     * The application loop
+     */
     private static void run()
     {
         final Scanner scanner = new Scanner(System.in);
@@ -21,6 +30,11 @@ public class Cinema
 
         int[][] matrix = new int[ROWS][COLUMNS];
         fillMatrix(matrix, ROWS, COLUMNS);
+
+        int ticketsSold = 0;
+        final int totalTickets = (ROWS - 1) * (COLUMNS - 1);
+        int currentIncome = 0;
+        final int totalIncome = getTotalIncome(ROWS - 1, COLUMNS - 1);
 
         boolean isRunning = true;
 
@@ -40,38 +54,132 @@ public class Cinema
                     printMatrix(matrix, ROWS, COLUMNS);
                     break;
                 case 2:
-                    buyTicket(matrix, ROWS, COLUMNS);
+                    currentIncome += buyTicket(matrix, ROWS, COLUMNS);
+                    ++ticketsSold;
+                    break;
+                case 3:
+                    printStatistics(ticketsSold, totalTickets, currentIncome, totalIncome);
                     break;
             }
         }
     }
 
-    private static void buyTicket(int[][] aMatrix, int aRows, int aColumns)
+    /**
+     * Returns the total possible income based on max seats
+     *
+     * @param aRows int: the number of rows
+     * @param aColumns int: the number of seats per row
+     * @return int: the total possible income
+     */
+    private static int getTotalIncome(int aRows, int aColumns)
     {
-        System.out.println("Enter a row number:");
-        final int ROW_NUMBER = Input.getInt();
-        System.out.println("Enter a seat number in that row:");
-        final int COL_NUMBER = Input.getInt();
+        int totalTickets = aRows * aColumns;
 
-        final int ticketPrice = getPrice(aRows - 1, aColumns - 1, ROW_NUMBER);
-        System.out.println("Ticket price: $" + ticketPrice);
+        if (totalTickets <= 60)
+        {
+            return totalTickets * 10;
+        }
 
-        aMatrix[ROW_NUMBER][COL_NUMBER] = -2;
+        int frontSeatsIncome = (aRows / 2) * aColumns * 10;
+        int backSeatsIncome = (aRows - (aRows / 2)) * aColumns * 8;
+        return frontSeatsIncome + backSeatsIncome;
     }
 
+    /**
+     * Prints the statistics pertintent to the cinema business
+     *
+     * @param aTicketsSold int: tickets currently sold
+     * @param aTotalTickets int: max tickets that can be sold
+     * @param aCurrentIncome int: current revenue
+     * @param aTotalIncome int: max revenue that can be earned if all tickets are sold
+     */
+    private static void printStatistics(int aTicketsSold, int aTotalTickets,
+                                        int aCurrentIncome, int aTotalIncome)
+    {
+        System.out.println("Number of purchased tickets: " + aTicketsSold);
+        final double percentage = (double) aTicketsSold / aTotalTickets;
+        System.out.printf(Locale.ENGLISH,"Percentage: %.2f%%\n", percentage * 100);
+        System.out.println("Current income: $" + aCurrentIncome);
+        System.out.println("Total income: $" + aTotalIncome);
+    }
+
+    /**
+     * Returns the ticket price after purchase
+     *
+     * @param aMatrix int[][]: the seats on the 2D array
+     * @param aRows int: the number of rows
+     * @param aColumns int: the number of columns or seats per row
+     * @return int: the price of the ticket
+     */
+    private static int buyTicket(int[][] aMatrix, int aRows, int aColumns)
+    {
+        boolean isValid = false;
+        int rowNumber = -1;
+        int colNumber = -1;
+
+        while (!isValid)
+        {
+            System.out.println("Enter a row number:");
+            rowNumber = Input.getInt();
+            System.out.println("Enter a seat number in that row:");
+            colNumber = Input.getInt();
+
+            if (rowNumber >= 0 && rowNumber < aRows && colNumber >= 0 && colNumber < aColumns)
+            {
+                if (aMatrix[rowNumber][colNumber] == -1)
+                {
+                    isValid = true;
+                }
+                else
+                {
+                    System.out.println("\nThat ticket has already been purchased!\n");
+                }
+            }
+            else
+            {
+                System.out.println("Wrong input!");
+            }
+        }
+
+        final int ticketPrice = getPrice(aRows - 1, aColumns - 1, rowNumber);
+        System.out.println("\nTicket price: $" + ticketPrice);
+
+        aMatrix[rowNumber][colNumber] = -2;
+        return ticketPrice;
+    }
+
+    /**
+     * Outputs the possible menu choices of this program
+     */
     private static void printMenu()
     {
         System.out.println();
         System.out.println("1. Show the seats");
         System.out.println("2. Buy a ticket");
+        System.out.println("3. Statistics");
         System.out.println("0. Exit");
     }
 
+    /**
+     * Returns the total number of seats
+     *
+     * @param aRows int: number of rows
+     * @param aColumns int: number of columns
+     * @return int: the total seats
+     */
     private static int getTotalSeats(int aRows, int aColumns)
     {
         return aRows * aColumns;
     }
 
+    /**
+     * Returns the price of the ticket based on row and user input
+     *
+     * @param aRows int: the number of rows
+     * @param aColumns int: the number of columns or seats per row
+     * @param aSelectedRow int: the row selected by the user
+     * @return int: price of the ticket
+     */
     private static int getPrice(int aRows, int aColumns, int aSelectedRow)
     {
         final int TOTAL_SEATS = getTotalSeats(aRows, aColumns);
@@ -91,6 +199,13 @@ public class Cinema
         return 8;
     }
 
+    /**
+     * Fills the matrix with numbers to represent a cinema
+     *
+     * @param aMatrix int[][]: the 2D array
+     * @param aRows int: the number of rows in the matrix
+     * @param aColumns int: the number of columns or seats per row in the matrix
+     */
     private static void fillMatrix(int[][] aMatrix, int aRows, int aColumns)
     {
         for (int row = 0; row < aRows; ++row)
@@ -116,6 +231,13 @@ public class Cinema
         }
     }
 
+    /**
+     * Prints the appropriate symbol based on the contents of the matrix
+     *
+     * @param aMatrix int[][]: the 2D array to represent seatings in a cinema
+     * @param aRows int: the number of rows
+     * @param aColumns int: the number of columns or seats per row
+     */
     private static void printMatrix(int[][] aMatrix, int aRows, int aColumns)
     {
         // -2 : B

@@ -608,6 +608,28 @@ files:
         }
     }
   learner_created: false
+- name: src/cinema/Input.java
+  visible: true
+  text: |
+    package cinema;
+
+    import java.util.Scanner;
+
+    public class Input
+    {
+        private static final Scanner scanner = new Scanner(System.in);
+
+        public static int getInt()
+        {
+            final int userInput = scanner.nextInt();
+            scanner.nextLine();
+            return userInput;
+        }
+    }
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/133/stages/713/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Tue, 02 Feb 2021 02:14:55 UTC
 record: -1
